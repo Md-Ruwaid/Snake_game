@@ -28,7 +28,7 @@ body {
   color: var(--text);
 }
 
-/* ── window chrome ── */
+
 .window {
   background: var(--face);
   border: 2px solid var(--win-border);
@@ -78,7 +78,7 @@ body {
   color: #fff;
 }
 
-/* ── content area ── */
+
 .content {
   padding: 10px;
 }
@@ -91,7 +91,7 @@ body {
   border-color: #404040 #fff #fff #404040;
 }
 
-/* ── grid ── */
+
 #grid {
   display: grid;
   grid-template-columns: repeat(20, 18px);
@@ -123,7 +123,7 @@ body {
   background: var(--blue);
 }
 
-/* ── status bar ── */
+
 .status-bar {
   display: flex;
   gap: 4px;
@@ -140,7 +140,7 @@ body {
   white-space: nowrap;
 }
 
-/* ── game over dialog ── */
+
 .modal {
   position: fixed;
   inset: 0;

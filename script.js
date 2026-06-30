@@ -1,4 +1,4 @@
-// ─── STEP 1: BUILD THE GRID ───────────────────────────────
+
 
 var cells = []
 var grid = document.getElementById('grid')
@@ -10,11 +10,11 @@ for (var i = 0; i < 400; i++) {
   cells.push(cell)
 }
 
-// ─── STEP 2: CREATE THE SNAKE ─────────────────────────────
+
 
 var snake, direction, redFood, blueFood, speed, gameLoop
 
-// ─── HUD elements ──────────────────────────────────────────
+
 var scoreEl = document.getElementById('score')
 var speedTextEl = document.getElementById('speedText')
 var modalEl = document.getElementById('gameOverModal')
@@ -42,7 +42,7 @@ function updateHud() {
 }
 
 function drawSnake() {
-  // wipe the board
+
   for (var i = 0; i < cells.length; i++) {
     cells[i].classList.remove('snake')
     cells[i].classList.remove('head')
@@ -50,19 +50,19 @@ function drawSnake() {
     cells[i].classList.remove('blue-food')
   }
 
-  // draw snake body
+
   for (var i = 0; i < snake.length; i++) {
     cells[snake[i]].classList.add('snake')
   }
-  // draw head distinctly
+
   cells[snake[0]].classList.add('head')
 
-  // draw both foods
+
   cells[redFood].classList.add('red-food')
   cells[blueFood].classList.add('blue-food')
 }
 
-// ─── STEP 5: MOVE THE SNAKE ───────────────────────────────
+
 
 function moveSnake() {
   var newHead = snake[0] + direction
@@ -110,7 +110,7 @@ function restartLoop() {
   gameLoop = setInterval(moveSnake, speed)
 }
 
-// ─── STEP 6: KEYBOARD CONTROLS ────────────────────────────
+
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'd' && direction !== -1) direction = 1
@@ -121,6 +121,5 @@ document.addEventListener('keydown', function(e) {
 
 document.getElementById('restartBtn').addEventListener('click', initGame)
 
-// ─── STEP 7: START THE GAME ───────────────────────────────
 
 initGame()
