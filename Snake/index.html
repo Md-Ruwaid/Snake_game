@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Log On to Windows</title>
+<style>
+:root {
+  --face: #ECE9D8;
+  --field: #FFFFFF;
+  --desktop: #008080;
+  --title-top: #3D95FF;
+  --title-bottom: #0A50C8;
+  --win-border: #0831D9;
+  --text: #000000;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--desktop);
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+}
+
+/* ── window chrome ── */
+.window {
+  background: var(--face);
+  border: 2px solid var(--win-border);
+  width: 360px;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 3px 3px 6px;
+  background: linear-gradient(180deg, var(--title-top), var(--title-bottom));
+  border-radius: 4px 4px 0 0;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+.title-left .icon { font-size: 13px; }
+
+.title-buttons { display: flex; gap: 2px; }
+
+.win-btn {
+  width: 19px;
+  height: 17px;
+  font-family: Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  cursor: default;
+  color: #000;
+}
+.win-btn:active { border-color: #404040 #fff #fff #404040; }
+.win-btn.close:hover { background: #E81123; color: #fff; }
+
+/* ── form ── */
+.login-form {
+  padding: 18px 16px 16px;
+}
+
+.login-instructions {
+  font-size: 11px;
+  margin: 0 0 14px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.field-row label {
+  width: 90px;
+  font-size: 12px;
+  text-align: right;
+  padding-right: 8px;
+}
+
+.field-row input {
+  flex: 1;
+  font-family: Tahoma, sans-serif;
+  font-size: 12px;
+  padding: 3px 4px;
+  background: var(--field);
+  border: 2px solid;
+  border-color: #404040 #fff #fff #404040;
+}
+
+.field-row input:focus {
+  outline: 1px dotted #404040;
+}
+
+/* ── buttons ── */
+.login-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 0 16px 16px;
+}
+
+.xp-button {
+  font-family: Tahoma, sans-serif;
+  font-size: 12px;
+  width: 75px;
+  height: 23px;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  cursor: default;
+}
+.xp-button:active { border-color: #404040 #fff #fff #404040; }
+
+/* ── status bar ── */
+.status-bar {
+  padding: 3px 6px 6px;
+}
+.status-panel {
+  padding: 2px 8px;
+  font-size: 11px;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+/* ── message dialog ── */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden { display: none; }
+
+.dialog {
+  width: 280px;
+  background: var(--face);
+  border: 2px solid var(--win-border);
+  border-radius: 6px 6px 0 0;
+}
+
+.dialog-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+}
+
+.dialog-icon { font-size: 28px; color: #E0A000; }
+
+.dialog-text p { margin: 0 0 6px; font-size: 12px; }
+.dialog-title { font-weight: bold; font-size: 13px !important; }
+
+.dialog-buttons {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+}
+</style>
+</head>
+<body>
+
+  <div class="window">
+    <div class="login-form">
+      <p class="login-instructions">Type your user name, then click OK.</p>
+      <div class="field-row">
+        <label for="username">User name:</label>
+        <input type="text" id="username" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="login-buttons">
+      <button id="okBtn" class="xp-button" type="button">OK</button>
+      <button id="cancelBtn" class="xp-button" type="button">Cancel</button>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-panel">Press Enter to log on</div>
+    </div>
+  </div>
+
+  <div id="msgModal" class="modal hidden">
+    <div class="dialog">
+      <div class="titlebar">
+        <div class="title-left">
+          <span class="icon" id="msgIcon">&#9888;</span>
+          <span class="title-text" id="msgTitleBar">Logon Message</span>
+        </div>
+        <div class="title-buttons">
+          <button class="win-btn close" id="msgClose" type="button">&#215;</button>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-icon" id="msgIconBig">&#9888;</div>
+        <div class="dialog-text">
+          <p class="dialog-title" id="msgTitle">Logon Message</p>
+          <p id="msgText">message</p>
+        </div>
+      </div>
+      <div class="dialog-buttons">
+        <button id="msgOk" class="xp-button" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+var usernameEl = document.getElementById('username')
+var okBtn = document.getElementById('okBtn')
+var cancelBtn = document.getElementById('cancelBtn')
+
+var msgModal = document.getElementById('msgModal')
+var msgIcon = document.getElementById('msgIcon')
+var msgIconBig = document.getElementById('msgIconBig')
+var msgTitleBar = document.getElementById('msgTitleBar')
+var msgTitle = document.getElementById('msgTitle')
+var msgText = document.getElementById('msgText')
+var msgOk = document.getElementById('msgOk')
+var msgClose = document.getElementById('msgClose')
+
+var redirectAfterClose = false
+
+function showMessage(kind, title, text) {
+  var icon = kind === 'error' ? '\u26A0' : '\u2139'
+  msgIcon.innerHTML = icon
+  msgIconBig.innerHTML = icon
+  msgTitleBar.textContent = title
+  msgTitle.textContent = title
+  msgText.textContent = text
+  redirectAfterClose = (kind === 'info')
+  msgModal.classList.remove('hidden')
+}
+
+function hideMessage() {
+  msgModal.classList.add('hidden')
+  if (redirectAfterClose) {
+    window.location.href = 'second.html'
+  }
+}
+
+function attemptLogin() {
+  var username = usernameEl.value.trim()
+
+  if (username === '') {
+    showMessage('error', 'Logon Message', 'Type a user name.')
+    return
+  }
+
+  showMessage('info', 'Welcome', 'Welcome, ' + username + '. Logging you on...')
+}
+
+okBtn.addEventListener('click', attemptLogin)
+
+cancelBtn.addEventListener('click', function () {
+  usernameEl.value = ''
+  usernameEl.focus()
+})
+
+msgOk.addEventListener('click', hideMessage)
+msgClose.addEventListener('click', hideMessage)
+
+usernameEl.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') attemptLogin()
+})
+
+usernameEl.focus()
+</script>
+</body>
+</html>

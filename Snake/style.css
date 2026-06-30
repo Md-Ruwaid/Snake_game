@@ -1,0 +1,202 @@
+:root {
+  --face: #ECE9D8;
+  --field: #FFFFFF;
+  --grid-line: #C2C2C2;
+  --white: #FFFFFF;
+  --dark: #404040;
+  --desktop: #008080;
+  --title-top: #3D95FF;
+  --title-bottom: #0A50C8;
+  --win-border: #0831D9;
+  --green: #008000;
+  --green-light: #2DA52D;
+  --red: #E00000;
+  --blue: #0050C8;
+  --text: #000000;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--desktop);
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+}
+
+/* ── window chrome ── */
+.window {
+  background: var(--face);
+  border: 2px solid var(--win-border);
+  border-radius: 6px 6px 0 0;
+  width: max-content;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 3px 3px 6px;
+  background: linear-gradient(180deg, var(--title-top), var(--title-bottom));
+  border-radius: 4px 4px 0 0;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+.title-left .icon { font-size: 13px; }
+
+.title-buttons { display: flex; gap: 2px; }
+
+.win-btn {
+  width: 19px;
+  height: 17px;
+  font-family: Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  cursor: default;
+  color: #000;
+}
+.win-btn:active {
+  border-color: #404040 #fff #fff #404040;
+}
+.win-btn.close:hover {
+  background: #E81123;
+  color: #fff;
+}
+
+/* ── content area ── */
+.content {
+  padding: 10px;
+}
+
+.field-panel {
+  display: inline-block;
+  padding: 4px;
+  background: var(--face);
+  border: 2px solid;
+  border-color: #404040 #fff #fff #404040;
+}
+
+/* ── grid ── */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(20, 18px);
+  grid-template-rows: repeat(20, 18px);
+  background: var(--field);
+}
+
+.cell {
+  width: 18px;
+  height: 18px;
+  background: var(--field);
+  border: 1px solid var(--grid-line);
+  margin: -1px 0 0 -1px;
+}
+
+.snake {
+  background: var(--green);
+}
+
+.head {
+  background: var(--green-light);
+}
+
+.red-food {
+  background: var(--red);
+}
+
+.blue-food {
+  background: var(--blue);
+}
+
+/* ── status bar ── */
+.status-bar {
+  display: flex;
+  gap: 4px;
+  padding: 3px 6px 6px;
+}
+
+.status-panel {
+  flex: 1;
+  padding: 2px 8px;
+  font-size: 11px;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+  white-space: nowrap;
+}
+
+/* ── game over dialog ── */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden {
+  display: none;
+}
+
+.dialog {
+  width: 280px;
+  background: var(--face);
+  border: 2px solid var(--win-border);
+  border-radius: 6px 6px 0 0;
+}
+
+.dialog-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+}
+
+.dialog-icon {
+  font-size: 28px;
+  color: #E0A000;
+}
+
+.dialog-text p {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+.dialog-title {
+  font-weight: bold;
+  font-size: 13px !important;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+}
+
+.xp-button {
+  font-family: Tahoma, sans-serif;
+  font-size: 12px;
+  width: 75px;
+  height: 23px;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  cursor: default;
+}
+.xp-button:active {
+  border-color: #404040 #fff #fff #404040;
+}

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Snake</title>
+<style>
+:root {
+  --face: #ECE9D8;
+  --field: #FFFFFF;
+  --grid-line: #C2C2C2;
+  --white: #FFFFFF;
+  --dark: #404040;
+  --desktop: #008080;
+  --title-top: #3D95FF;
+  --title-bottom: #0A50C8;
+  --win-border: #0831D9;
+  --green: #008000;
+  --green-light: #2DA52D;
+  --red: #E00000;
+  --blue: #0050C8;
+  --text: #000000;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--desktop);
+  font-family: Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+}
+
+/* ── window chrome ── */
+.window {
+  background: var(--face);
+  border: 2px solid var(--win-border);
+  border-radius: 6px 6px 0 0;
+  width: max-content;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 3px 3px 6px;
+  background: linear-gradient(180deg, var(--title-top), var(--title-bottom));
+  border-radius: 4px 4px 0 0;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+.title-left .icon { font-size: 13px; }
+
+.title-buttons { display: flex; gap: 2px; }
+
+.win-btn {
+  width: 19px;
+  height: 17px;
+  font-family: Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  cursor: default;
+  color: #000;
+}
+.win-btn:active {
+  border-color: #404040 #fff #fff #404040;
+}
+.win-btn.close:hover {
+  background: #E81123;
+  color: #fff;
+}
+
+/* ── content area ── */
+.content {
+  padding: 10px;
+}
+
+.field-panel {
+  display: inline-block;
+  padding: 4px;
+  background: var(--face);
+  border: 2px solid;
+  border-color: #404040 #fff #fff #404040;
+}
+
+/* ── grid ── */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(20, 18px);
+  grid-template-rows: repeat(20, 18px);
+  background: var(--field);
+}
+
+.cell {
+  width: 18px;
+  height: 18px;
+  background: var(--field);
+  border: 1px solid var(--grid-line);
+  margin: -1px 0 0 -1px;
+}
+
+.snake {
+  background: var(--green);
+}
+
+.head {
+  background: var(--green-light);
+}
+
+.red-food {
+  background: var(--red);
+}
+
+.blue-food {
+  background: var(--blue);
+}
+
+/* ── status bar ── */
+.status-bar {
+  display: flex;
+  gap: 4px;
+  padding: 3px 6px 6px;
+}
+
+.status-panel {
+  flex: 1;
+  padding: 2px 8px;
+  font-size: 11px;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+  white-space: nowrap;
+}
+
+/* ── game over dialog ── */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden {
+  display: none;
+}
+
+.dialog {
+  width: 280px;
+  background: var(--face);
+  border: 2px solid var(--win-border);
+  border-radius: 6px 6px 0 0;
+}
+
+.dialog-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+}
+
+.dialog-icon {
+  font-size: 28px;
+  color: #E0A000;
+}
+
+.dialog-text p {
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+.dialog-title {
+  font-weight: bold;
+  font-size: 13px !important;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 16px;
+}
+
+.xp-button {
+  font-family: Tahoma, sans-serif;
+  font-size: 12px;
+  width: 75px;
+  height: 23px;
+  background: var(--face);
+  border: 1px solid;
+  border-color: #fff #404040 #404040 #fff;
+  cursor: default;
+}
+.xp-button:active {
+  border-color: #404040 #fff #fff #404040;
+}
+</style>
+</head>
+<body>
+
+  <div class="window" id="windowEl">
+    <div class="titlebar">
+      <div class="title-left">
+        <span class="icon">🐍</span>
+        <span class="title-text">snake.exe</span>
+      </div>
+      <div class="title-buttons">
+        <button class="win-btn" type="button">_</button>
+        <button class="win-btn" type="button">&#9633;</button>
+        <button class="win-btn close" type="button">&#215;</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="field-panel">
+        <div id="grid"></div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-panel">Score: <span id="score">0</span></div>
+      <div class="status-panel">Speed: <span id="speedText">200</span>ms</div>
+      <div class="status-panel">W A S D to move</div>
+    </div>
+  </div>
+
+  <div id="gameOverModal" class="modal hidden">
+    <div class="dialog">
+      <div class="titlebar">
+        <div class="title-left">
+          <span class="icon">&#9888;</span>
+          <span class="title-text">Snake</span>
+        </div>
+        <div class="title-buttons">
+          <button class="win-btn close" type="button">&#215;</button>
+        </div>
+      </div>
+      <div class="dialog-body">
+        <div class="dialog-icon">&#9888;</div>
+        <div class="dialog-text">
+          <p class="dialog-title">Game Over</p>
+          <p id="modalReason">You hit the wall.</p>
+          <p>Score: <span id="modalScore">0</span></p>
+        </div>
+      </div>
+      <div class="dialog-buttons">
+        <button id="restartBtn" class="xp-button" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+// ─── STEP 1: BUILD THE GRID ───────────────────────────────
+
+var cells = []
+var grid = document.getElementById('grid')
+
+for (var i = 0; i < 400; i++) {
+  var cell = document.createElement('div')
+  cell.classList.add('cell')
+  grid.appendChild(cell)
+  cells.push(cell)
+}
+
+// ─── STEP 2: CREATE THE SNAKE ─────────────────────────────
+
+var snake, direction, redFood, blueFood, speed, gameLoop
+
+// ─── HUD elements ──────────────────────────────────────────
+var scoreEl = document.getElementById('score')
+var speedTextEl = document.getElementById('speedText')
+var modalEl = document.getElementById('gameOverModal')
+var modalReasonEl = document.getElementById('modalReason')
+var modalScoreEl = document.getElementById('modalScore')
+
+function initGame() {
+  snake = [212, 211, 210]
+  direction = 1
+  redFood = 50
+  blueFood = 80
+  speed = 200
+
+  modalEl.classList.add('hidden')
+  drawSnake()
+  updateHud()
+
+  clearInterval(gameLoop)
+  gameLoop = setInterval(moveSnake, speed)
+}
+
+function updateHud() {
+  scoreEl.textContent = snake.length - 3
+  speedTextEl.textContent = speed
+}
+
+function drawSnake() {
+  // wipe the board
+  for (var i = 0; i < cells.length; i++) {
+    cells[i].classList.remove('snake')
+    cells[i].classList.remove('head')
+    cells[i].classList.remove('red-food')
+    cells[i].classList.remove('blue-food')
+  }
+
+  // draw snake body
+  for (var i = 0; i < snake.length; i++) {
+    cells[snake[i]].classList.add('snake')
+  }
+  // draw head distinctly
+  cells[snake[0]].classList.add('head')
+
+  // draw both foods
+  cells[redFood].classList.add('red-food')
+  cells[blueFood].classList.add('blue-food')
+}
+
+// ─── STEP 5: MOVE THE SNAKE ───────────────────────────────
+
+function moveSnake() {
+  var newHead = snake[0] + direction
+
+  if (newHead < 0 || newHead >= 400) {
+    return gameOver('You hit the wall.')
+  }
+  if (direction === 1 && snake[0] % 20 === 19) {
+    return gameOver('You hit the wall.')
+  }
+  if (direction === -1 && snake[0] % 20 === 0) {
+    return gameOver('You hit the wall.')
+  }
+  if (snake.includes(newHead)) {
+    return gameOver('You hit yourself.')
+  }
+
+  snake.unshift(newHead)
+
+  if (newHead === redFood) {
+    redFood = Math.floor(Math.random() * 400)
+    if (speed < 400) speed = speed + 50
+    restartLoop()
+  } else if (newHead === blueFood) {
+    blueFood = Math.floor(Math.random() * 400)
+    if (speed > 60) speed = speed - 50
+    restartLoop()
+  } else {
+    snake.pop()
+  }
+
+  drawSnake()
+  updateHud()
+}
+
+function gameOver(reason) {
+  clearInterval(gameLoop)
+  modalReasonEl.textContent = reason
+  modalScoreEl.textContent = snake.length - 3
+  modalEl.classList.remove('hidden')
+}
+
+function restartLoop() {
+  clearInterval(gameLoop)
+  gameLoop = setInterval(moveSnake, speed)
+}
+
+// ─── STEP 6: KEYBOARD CONTROLS ────────────────────────────
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'd' && direction !== -1) direction = 1
+  if (e.key === 'a' && direction !== 1) direction = -1
+  if (e.key === 's' && direction !== -20) direction = 20
+  if (e.key === 'w' && direction !== 20) direction = -20
+})
+
+document.getElementById('restartBtn').addEventListener('click', initGame)
+
+// ─── STEP 7: START THE GAME ───────────────────────────────
+
+initGame()
+</script>
+</body>
+</html>
